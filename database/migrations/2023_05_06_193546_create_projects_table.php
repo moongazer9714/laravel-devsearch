@@ -14,13 +14,12 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('profile_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->string('featured_image');
             $table->string('demo_link');
             $table->string('source_link');
-            $table->unsignedBigInteger('vote_total');
-            $table->unsignedBigInteger('vote_ratio');
 
             $table->timestamps();
         });

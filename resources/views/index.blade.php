@@ -11,13 +11,12 @@
             </div>
 
             <div class="hero-section__search">
-                <form class="form" action="#" method="get">
+                <form class="form" method="get">
                     <div class="form__field">
                         <label for="formInput#search">Search Developers </label>
-                        <input class="input input--text" id="formInput#search" type="text" name="text"
-                               placeholder="Search by developer name"/>
+                        <input class="input input--text" id="formInput#search" type="text" name="search"
+                               placeholder="Search by developer name" value="{{ $search }}"/>
                     </div>
-
                     <input class="btn btn--sub btn--lg" type="submit" value="Search"/>
                 </form>
             </div>
@@ -43,24 +42,11 @@
                                 {{ $profile->bio }}
                             </p>
                             <div class="dev__skills">
-                  <span class="tag tag--pill tag--main">
-                    <small>JavaScript</small>
-                  </span>
-                                <span class="tag tag--pill tag--main">
-                    <small>React</small>
-                  </span>
-                                <span class="tag tag--pill tag--main">
-                    <small>SCSS</small>
-                  </span>
-                                <span class="tag tag--pill tag--main">
-                    <small>Nodejs</small>
-                  </span>
-                                <span class="tag tag--pill tag--main">
-                    <small>Express</small>
-                  </span>
-                                <span class="tag tag--pill tag--main">
-                    <small>GraphQL</small>
-                  </span>
+                            @foreach($profile->skills as $skill)
+                                  <span class="tag tag--pill tag--main">
+                                    <small>{{ $skill->name }}</small>
+                                  </span>
+                            @endforeach
                             </div>
                         </a>
                     </div>
@@ -69,21 +55,6 @@
         </div>
     </section>
 
-    <div class="pagination">
-        <ul class="container">
-            <li><a href="#" class="btn btn--disabled">&#10094; Prev</a></li>
-            <li><a href="#" class="btn btn--sub">01</a></li>
-            <li><a href="#" class="btn">02</a></li>
-            <li><a href="#" class="btn">03</a></li>
-            <li><a href="#" class="btn">04</a></li>
-            <li><a href="#" class="btn">05</a></li>
-            <li><a href="#" class="btn">06</a></li>
-            <li><a href="#" class="btn">07</a></li>
-            <li><a href="#" class="btn">08</a></li>
-            <li><a href="#" class="btn">09</a></li>
-            <li><a href="#" class="btn">10</a></li>
-            <li><a href="#" class="btn">Next &#10095;</a></li>
-        </ul>
-    </div>
+    {{ $profiles->links('vendor.pagination.custom')}}
 </main>
 @endsection

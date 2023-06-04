@@ -2,19 +2,32 @@
 
 namespace App\Http\Controllers\Profiles;
 
-use App\Http\Controllers\Controller;
-use App\Models\Profiles\Profile;
+
 use Illuminate\Http\Request;
+use App\Models\Comments\Comment;
+use App\Models\Profiles\Profile;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Profile\StoreRequest;
+use App\Models\Projects\Project;
 
 class ProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $profiles = Profile::all();
-        return view('index', compact('profiles'));
+
+        $search = $request['search'] ?? '';
+        if ($search != '') {
+            $profiles = Profile::where('username', 'LIKE', "%$search%")->get();
+        } else {
+            $profiles = Profile::all();
+        }
+
+        $profiles = Profile::paginate(1);
+        return view('index', compact('profiles', 'search'));
     }
 
     /**
@@ -22,13 +35,13 @@ class ProfileController extends Controller
      */
     public function create()
     {
-        return view('profile.profile_form');
+        return view('profile.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         $path = $request->file('profile_image')->store('profile-image');
 
@@ -52,6 +65,16 @@ class ProfileController extends Controller
      */
     public function show(Profile $profile)
     {
+        $user = auth()->user();
+        $profile = $user->profile;
+
+        if ($profile) {
+            return view('profile.show', compact('profile'));
+        } else {
+            return response("You don't have access this account");
+        }
+
+
         return view('profile.show', compact('profile'));
     }
 
@@ -66,9 +89,28 @@ class ProfileController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreRequest $request, Profile $profile)
     {
+        if ($request->hasFile('profile_image')) {
+            if (isset($profile->profile_image)) {
+                Storage::delete($profile->profile_image);
+            }
+            $path = $request->file('profile_image')->store('profile-image');
+        }
 
+        $profile->update([
+            'user_id' => auth()->id(),
+            'username' => $request->username,
+            'location' => $request->location,
+            'short_intro' => $request->short_intro,
+            'bio' => $request->bio,
+            'profile_image' => $path ?? $profile->profile_image,
+            'social_github' => $request->social_github,
+            'social_linkedin' => $request->social_linkedin,
+            'social_twitter' => $request->social_twitter,
+            'social_youtube' => $request->social_youtube
+        ]);
+        return redirect()->route('index', compact('profile'));
     }
 
     /**
@@ -81,6 +123,7 @@ class ProfileController extends Controller
 
     public function showAccount($id)
     {
+
         $profiles = Profile::all();
         $profile = $profiles->find($id);
         return view('profile', compact('profile'));

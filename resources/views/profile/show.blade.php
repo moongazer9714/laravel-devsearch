@@ -7,21 +7,21 @@
                 <div class="column column--1of3">
                     <div class="card text-center">
                         <div class="card__body dev">
-                            <a class="tag tag--pill tag--main settings__btn" href="#"><i class="im im-edit"></i>
+                            <a class="tag tag--pill tag--main settings__btn"
+                                href="{{ route('profile.edit', $profile->id) }}"><i class="im im-edit"></i>
                                 Edit</a>
                             <img class="avatar avatar--xl dev__avatar"
-                                 src="{{ asset('storage/'.$profile->profile_image) }}"/>
+                                src="{{ asset('storage/' . $profile->profile_image) }}" />
                             <h2 class="dev__name">{{ $profile->username }}</h2>
                             <p class="dev__title">{{ $profile->short_intro }}</p>
                             <p class="dev__location">Based in {{ $profile->location }}</p>
                             <ul class="dev__social">
-                                @if($profile->social_github)
+                                @if ($profile->social_github)
                                     <li>
                                         <a title="Github" href="{{ $profile->social_github }}" target="_blank"><i
                                                 class="fa fa-github" style="font-size: 32px"></i></a>
                                     </li>
                                 @else
-
                                 @endif
                                 <li>
                                     <a title="Stackoverflow" href="#" target="_blank"><i
@@ -30,17 +30,18 @@
                                 <li>
                                     <a title="Twitter" href="#" target="_blank"><i class="im im-twitter"></i></a>
                                 </li>
-                                @if($profile->social_linkedin)
+                                @if ($profile->social_linkedin)
                                     <li>
                                         <a title="LinkedIn" href="{{ $profile->social_linkedin }}" target="_blank"><i
                                                 class="fa fa-linkedin" style="font-size: 32px"></i></a>
                                     </li>
                                 @endif
                                 <li>
-                                    <a title="Personal Website" href="#" target="_blank"><i class="im im-globe"></i></a>
+                                    <a title="Personal Website" href="#" target="_blank"><i
+                                            class="im im-globe"></i></a>
                                 </li>
                             </ul>
-                            <a href="#" class="btn btn--sub btn--lg">Send Message </a>
+                            <a href="{{ route('messages.create') }}" class="btn btn--sub btn--lg">Send Message </a>
                         </div>
                     </div>
                 </div>
@@ -53,58 +54,31 @@
                     </div>
                     <div class="settings">
                         <h3 class="settings__title">Skills</h3>
-                        <a class="tag tag--pill tag--sub settings__btn tag--lg" href="#"><i class="im im-plus"></i> Add
+                        <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{{ route('skill.create') }}">
+                            <i class="im im-plus"></i> Add
                             Skill</a>
                     </div>
 
                     <table class="settings__table">
-                        <tr>
-                            <td class="settings__tableInfo">
-                                <h4>JavaScript</h4>
-                                <p>
-                                    Consectetur adipisicing elit. Natus nam dolore aut sed vitae eos architecto unde
-                                    tempore
-                                    exercitationem fugiat?...
-                                </p>
-                            </td>
-                            <td class="settings__tableActions">
-                                <a class="tag tag--pill tag--main settings__btn" href="#"><i class="im im-edit"></i>
-                                    Edit</a>
-                                <a class="tag tag--pill tag--main settings__btn" href="#"><i
-                                        class="im im-x-mark-circle-o"></i>
-                                    Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="settings__tableInfo">
-                                <h4>Python</h4>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est, suscipit...</p>
-                            </td>
-                            <td class="settings__tableActions">
-                                <a class="tag tag--pill tag--main settings__btn" href="#"><i class="im im-edit"></i>
-                                    Edit</a>
-                                <a class="tag tag--pill tag--main settings__btn" href="#"><i
-                                        class="im im-x-mark-circle-o"></i>
-                                    Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="settings__tableInfo">
-                                <h4>Django</h4>
-                                <p>
-                                    Amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit. Quod,
-                                    odio Est, suscipit...
-                                </p>
-                            </td>
-                            <td class="settings__tableActions">
-                                <a class="tag tag--pill tag--main settings__btn" href="#"><i class="im im-edit"></i>
-                                    Edit</a>
-                                <a class="tag tag--pill tag--main settings__btn" href="#"><i
-                                        class="im im-x-mark-circle-o"></i>
-                                    Delete</a>
-                            </td>
-                        </tr>
+                        @foreach ($profile->skills as $skill)
+                            <tr>
+                                <td class="settings__tableInfo">
+                                    <h4>{{ $skill->name }}</h4>
+                                    <p>
+                                        {{ $skill->description }}
+                                    </p>
+                                </td>
+                                <td class="settings__tableActions">
+                                    <a class="tag tag--pill tag--main settings__btn"
+                                        href="{{ route('skill.edit', $skill->id) }}"><i class="im im-edit"></i>
+                                        Edit</a>
+                                    <a class="tag tag--pill tag--main settings__btn"
+                                        href="{{ route('skill.delete', $skill->id) }}"><i
+                                            class="im im-x-mark-circle-o"></i>
+                                        Delete</a>
+                                </td>
+                            </tr>
+                        @endforeach
                     </table>
 
                     <div class="settings">
@@ -115,12 +89,12 @@
                     </div>
 
                     <table class="settings__table">
-                        @foreach($profile->project as $project)
+                        @foreach ($profile->project as $project)
                             <tr>
                                 <td class="settings__thumbnail">
                                     <a href="{{ route('project.show', $project->id) }}"><img
-                                            src="{{ asset('storage/'.$project->featured_image) }}"
-                                            alt="Project Thumbnail"/></a>
+                                            src="{{ asset('storage/' . $project->featured_image) }}"
+                                            alt="Project Thumbnail" /></a>
                                 </td>
                                 <td class="settings__tableInfo">
                                     <a href="{{ route('project.show', $project->id) }}">{{ $project->title }}</a>
@@ -130,11 +104,11 @@
                                 </td>
                                 <td class="settings__tableActions">
                                     <a class="tag tag--pill tag--main settings__btn"
-                                       href="{{ route('project.edit', $project->id) }}"><i class="im im-edit"></i>
+                                        href="{{ route('project.edit', $project->id) }}"><i class="im im-edit"></i>
                                         Edit</a>
 
                                     <a class="tag tag--pill tag--main settings__btn"
-                                       href="{{ route('project.delete', $project->id) }}" value="Delete">
+                                        href="{{ route('project.delete', $project->id) }}" value="Delete">
                                         <i class="im im-x-mark-circle-o"></i>Delete</a>
                                 </td>
                             </tr>

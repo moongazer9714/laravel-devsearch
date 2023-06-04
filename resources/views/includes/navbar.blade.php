@@ -1,6 +1,6 @@
 <header class="header">
     <div class="container container--narrow">
-        <a href="/" class="header__logo">
+        <a href="{{ route('index') }}" class="header__logo">
             <img src="{{ asset('images/logo.svg') }}" alt="DevSearch Logo"/>
         </a>
         <nav class="header__nav">
@@ -13,7 +13,7 @@
                 <li class="header__menuItem"><a href="{{ route('index') }}">Developers</a></li>
                 <li class="header__menuItem"><a href="{{ route('project.index') }}">Projects</a></li>
                 @auth
-                <li class="header__menuItem"><a href="inbox.html">Inbox</a></li>
+                <li class="header__menuItem"><a href="{{ route('messages.index') }}">Inbox</a></li>
                 <li class="header__menuItem"><a href="{{ route('profile.show', Auth::user()->id) }}">My Account</a></li>
                 <form action="{{ route('logout') }}" method="post">
                     @csrf
@@ -22,7 +22,6 @@
                     @else
                 <li class="header__menuItem"><a href="{{ route('login') }}" class="btn btn--sub">Login/SignUp</a></li>
                 @endauth
-{{--                <li class="header__menuItem"><a href="{{ route('register') }}" class="btn btn--sub">SignUp</a></li>--}}
             </ul>
         </nav>
     </div>

@@ -2,9 +2,11 @@
 
 namespace App\Models\Projects;
 
+use App\Models\Comments\Comment;
 use App\Models\Profiles\Profile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Project extends Model
 {
@@ -12,6 +14,8 @@ class Project extends Model
 
     protected $table = 'projects';
     protected $guarded = false;
+
+
 
     public function profile()
     {
@@ -22,10 +26,9 @@ class Project extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
-
-
-//, 'project_tags', 'project_id', 'tag_id'
-
-
-

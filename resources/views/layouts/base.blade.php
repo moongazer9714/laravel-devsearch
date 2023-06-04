@@ -25,3 +25,4 @@
 @include('includes.navbar')
 @yield('content')
 </body>
+</html>

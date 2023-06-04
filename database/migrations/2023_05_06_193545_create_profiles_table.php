@@ -14,9 +14,6 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
 
-//            $table->unsignedBigInteger('user_id')->unique();
-//            $table->string('name');
-//            $table->string('email')->unique();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('username');
             $table->string('location');
@@ -27,7 +24,7 @@ return new class extends Migration
             $table->string('social_linkedin');
             $table->string('social_twitter');
             $table->string('social_youtube');
-//            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

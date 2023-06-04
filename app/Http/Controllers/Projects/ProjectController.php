@@ -2,22 +2,35 @@
 
 namespace App\Http\Controllers\Projects;
 
-use App\Http\Controllers\Controller;
-use App\Models\Profiles\Profile;
-use App\Models\Projects\Project;
 use App\Models\Projects\Tag;
 use Illuminate\Http\Request;
+use App\Models\Comments\Comment;
+use App\Models\Projects\Project;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Project\StoreRequest;
+use App\Http\Requests\Project\UpdateRequest;
+
 
 class ProjectController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::all();
-        return view('project.index', compact('projects'));
+
+        $search = $request['search'] ?? '';
+        if ($search != '') {
+            $projects = Project::where('title', 'LIKE', "%$search%")->get();
+        } else {
+            $projects = Project::all();
+        }
+
+        $projects = Project::paginate(1);
+        // $projects->appends(['search' => $search]);
+        return view('project.index', compact('projects', 'search'));
     }
 
     /**
@@ -33,7 +46,7 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         if ($request->hasFile('featured_image')) {
             $path = $request->file('featured_image')->store('featured-image');
@@ -46,8 +59,6 @@ class ProjectController extends Controller
             'featured_image' => $path ?? null,
             'demo_link' => $request->demo_link,
             'source_link' => $request->source_link,
-            'vote_total' => $request->vote_total,
-            'vote_ratio' => $request->vote_ratio
         ]);
 
         if (isset($request->tags)) {
@@ -55,10 +66,7 @@ class ProjectController extends Controller
                 $project->tags()->attach($tag);
             }
         }
-        if (isset($request->tags->id)) {
-            $project->tags()->sync($request->tags->id);
-            return redirect()->route('project.index');
-        }
+        return redirect()->route('project.index');
     }
 
     /**
@@ -66,7 +74,19 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return view('project.show', compact('project'));
+
+        // Count up votes
+        $upVotesCount = Comment::where('value', Comment::VOTE_TYPE['up'])
+            ->where('project_id', $project->id)
+            ->count();
+
+        // Calculate the total votes for the project
+        $totalVotesCount = Comment::where('project_id', $project->id)->count();
+
+        // Calculate the percentage
+        $percentage = round(($totalVotesCount > 0) ? ($upVotesCount / $totalVotesCount) * 100 : 0, 2);
+
+        return view('project.show', compact('project', 'percentage'));
     }
 
     /**
@@ -82,7 +102,7 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(UpdateRequest $request, Project $project)
     {
         if ($request->hasFile('featured_image')) {
             if (isset($project->featured_image)) {
@@ -97,16 +117,10 @@ class ProjectController extends Controller
             'featured_image' => $path ?? $project->featured_image,
             'demo_link' => $request->demo_link,
             'source_link' => $request->source_link,
-            'vote_total' => $request->vote_total,
-            'vote_ratio' => $request->vote_ratio
         ]);
+
         if (isset($request->tags)) {
-            foreach ($request->tags as $tag) {
-                $project->tags()->attach($tag);
-            }
-        }
-        if (isset($request->tags->id)) {
-            $project->tags()->sync($request->tags->id);
+            $project->tags()->sync($request->tags);
         }
         return redirect()->route('project.show', compact('project'));
     }
